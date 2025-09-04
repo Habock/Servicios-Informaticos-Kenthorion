@@ -3,243 +3,747 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplicación de Tarjetas de Memoria</title>
+    <title>Servicios Informáticos KENTHORION</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Orbitron', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        'hbk-black': '#000000',
+                        'hbk-green': '#00ff00',
+                        'hbk-purple': '#8a2be2',
+                        'hbk-orange': '#FF5F00',
+                        'hbk-yellow': '#FFFF00',
+                    },
+                    boxShadow: {
+                        'glow-green': '0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3)',
+                        'glow-purple': '0 0 10px rgba(138, 43, 226, 0.5), 0 0 20px rgba(138, 43, 226, 0.3)',
+                        'glow-orange': '0 0 10px rgba(255, 95, 0, 0.5), 0 0 20px rgba(255, 95, 0, 0.3)',
+                        'glow-yellow': '0 0 10px rgba(255, 255, 0, 0.5), 0 0 20px rgba(255, 255, 0, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter y Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* Estilos personalizados que no se pueden hacer con Tailwind */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #1f2937;
+            font-family: 'Orbitron', sans-serif;
+            background-color: #000000;
+            color: #00ff00;
         }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            padding: 2rem;
-            background-color: #ffffff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-        }
-        .card {
-            background-color: #e5e7eb;
-            border: 2px solid #d1d5db;
-            border-radius: 0.75rem;
-            min-height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.75rem;
-            padding: 1rem;
-        }
-        .card-back {
-            transform: rotateY(180deg);
-        }
-        .loading-overlay {
+        
+        canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            z-index: 0;
         }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+
+        /* Animación de onda para el título principal */
+        @keyframes text-wave {
+            0% { transform: translateY(0) scale(1); text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
+            50% { transform: translateY(-10px) scale(1.02); text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00; }
+            100% { transform: translateY(0) scale(1); text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        /* Animación de parpadeo de neón para el texto resaltado */
+        @keyframes flicker-orange {
+            0%, 100% {
+                text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00, 0 0 20px #FF5F00;
+            }
+            10% { text-shadow: none; }
+            11% { text-shadow: 0 0 5px #FF5F00; }
+            12% { text-shadow: none; }
+            20% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00; }
+            21% { text-shadow: none; }
+            22% { text-shadow: 0 0 5px #FF5F00; }
+            24% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00, 0 0 20px #FF5F00, 0 0 40px #FF5F00; }
+            40% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00; }
+            50% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00, 0 0 20px #FF5F00, 0 0 40px #FF5F00; }
+            60% { text-shadow: none; }
+            70% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00, 0 0 20px #FF5F00; }
+            80% { text-shadow: 0 0 5px #FF5F00, 0 0 10px #FF5F00, 0 0 20px #FF5F00; }
+            90% { text-shadow: none; }
+        }
+        
+        .flicker-animation {
+            animation: flicker-orange 2s linear infinite;
+        }
+
+        /* Nueva animación de pulso para los botones */
+        @keyframes button-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 20px rgba(138, 43, 226, 0.8), 0 0 30px rgba(138, 43, 226, 0.6);
+            }
+        }
+
+        .active-button {
+            box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00 !important;
+        }
+
+        .day-cell.available:hover {
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .day-cell.selected {
+            box-shadow: 0 0 15px #00ff00, 0 0 20px #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        .day-cell.not-available {
+            opacity: 0.3;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .day-cell.fully-booked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         }
     </style>
 </head>
-<body>
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loader"></div>
-        <div class="text-xl ml-4">Cargando... Por favor, espere.</div>
-    </div>
+<body class="text-hbk-green min-h-screen flex flex-col items-center p-5">
+    <!-- Canvas para el fondo animado -->
+    <canvas id="bg-canvas"></canvas>
 
-    <div id="app-container" class="hidden">
-        <div class="container text-center">
-            <h1 class="text-3xl font-bold mb-6">Tarjetas de Memoria</h1>
+    <!-- Contenido de la web -->
+    <header class="w-full text-center py-10 relative z-10">
+        <!-- Logo de KENTHORION -->
+        <img src="Kenthorion.png" alt="Logo de Kenthorion" class="w-48 h-48 mb-5 mx-auto animate-pulse-logo">
+        
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-widest uppercase text-hbk-green text-shadow-glow-green animate-[text-wave_2s_infinite_ease-in-out]">
+            SERVICIOS INFORMATICOS <span class="text-hbk-orange flicker-animation">KENTHORION</span>
+        </h1>
+        <p class="mt-2 text-sm sm:text-base md:text-lg">Expertos en el cuidado y optimización de tu equipo.</p>
+        <p class="mt-4 text-xs">Tu ID de usuario (para reservas compartidas): <br><span id="user-id" class="text-hbk-purple text-sm font-bold break-all">Cargando...</span></p>
+    </header>
 
-            <div id="card" class="card mb-6">
-                <div class="card-inner">
-                    <div id="card-front" class="card-front text-lg font-semibold">
-                        <span id="front-text">Cargando...</span>
-                    </div>
-                    <div id="card-back" class="card-back text-lg font-semibold bg-gray-200">
-                        <span id="back-text"></span>
-                    </div>
+    <main class="w-full max-w-7xl mt-10 flex flex-col lg:flex-row justify-between gap-10 relative z-10">
+        <!-- Contenedor para la sección media -->
+        <div class="lg:w-1/3 min-w-80">
+            <h2 class="text-2xl font-bold mb-4 uppercase text-center lg:text-left text-shadow-glow-green">Nuestros Servicios</h2>
+            <div class="services-grid flex flex-col gap-4">
+                <!-- Botones de servicios -->
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="limpieza-avanzada-section">
+                    <i class="fa-solid fa-broom-ball text-2xl transition-transform duration-700 group-hover:rotate-12"></i>
+                    Limpieza Avanzada
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="optimizacion-section">
+                    <i class="fa-solid fa-bolt text-2xl transition-transform duration-700 group-hover:animate-pulse"></i>
+                    Optimización
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="limpieza-hardware-section">
+                    <i class="fa-solid fa-fan text-2xl transition-transform duration-700 group-hover:rotate-180"></i>
+                    Limpieza de Hardware
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="limpieza-software-section">
+                    <i class="fa-solid fa-bug text-2xl transition-transform duration-700 group-hover:translate-x-1"></i>
+                    Limpieza de Software
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="cambio-componentes-section">
+                    <i class="fa-solid fa-screwdriver-wrench text-2xl transition-transform duration-700 group-hover:rotate-12"></i>
+                    Cambio de Componentes
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="upgrade-section">
+                    <i class="fa-solid fa-arrow-up-from-bracket text-2xl transition-transform duration-700 group-hover:scale-110"></i>
+                    Upgrade
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="testeo-section">
+                    <i class="fa-solid fa-magnifying-glass text-2xl transition-transform duration-700 group-hover:scale-110"></i>
+                    Testeo
+                </button>
+                <button class="service-button bg-gray-900 text-hbk-purple border-2 border-hbk-purple rounded-xl p-4 font-bold uppercase cursor-pointer transition-all duration-300 shadow-glow-purple hover:translate-y-[-3px] hover:shadow-glow-purple group flex items-center gap-4 animate-[button-pulse_2s_infinite_alternate_ease-in-out]" data-section="reservas-comunicacion-section">
+                    <i class="fa-solid fa-comments text-2xl transition-transform duration-700 group-hover:scale-110"></i>
+                    Reservas y Comunicación
+                </button>
+            </div>
+        </div>
+
+        <!-- Parte media derecha: se muestran los apartados de servicio -->
+        <div class="flex-grow p-5 border-2 border-hbk-green rounded-xl bg-black bg-opacity-50 flex flex-col justify-between overflow-hidden shadow-glow-green">
+            <!-- Apartado de Limpieza Avanzada -->
+            <div id="limpieza-avanzada-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full active">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Limpieza+Avanzada" alt="Limpieza Avanzada" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Limpieza Avanzada</h3>
+                <p class="mb-5 leading-relaxed">Eliminamos archivos temporales, caché, programas innecesarios y malware para mejorar el rendimiento general de tu equipo. Incluye un análisis profundo del sistema y configuración de inicio.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
                 </div>
             </div>
 
-            <div class="flex justify-center space-x-4">
-                <button id="next-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-colors duration-300">
-                    Siguiente Tarjeta
-                </button>
-                <button id="add-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-colors duration-300">
-                    Añadir Tarjeta
-                </button>
+            <!-- Apartado de Optimización -->
+            <div id="optimizacion-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Optimización" alt="Optimización" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Optimización</h3>
+                <p class="mb-5 leading-relaxed">Ajustamos la configuración del sistema operativo, desfragmentamos discos (si aplica) y optimizamos el uso de la memoria RAM para una mayor velocidad de respuesta y estabilidad.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
             </div>
-            
-            <div id="error-message" class="mt-4 text-red-500 font-bold hidden"></div>
+
+            <!-- Apartado de Limpieza de Hardware -->
+            <div id="limpieza-hardware-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Limpieza+de+Hardware" alt="Limpieza de Hardware" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Limpieza de Hardware</h3>
+                <p class="mb-5 leading-relaxed">Desarmamos y limpiamos internamente tu equipo, eliminando polvo y residuos de componentes clave como la placa base, ventiladores y disipadores de calor para evitar el sobrecalentamiento.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
+            </div>
+
+            <!-- Apartado de Limpieza de Software -->
+            <div id="limpieza-software-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Limpieza+de+Software" alt="Limpieza de Software" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Limpieza de Software</h3>
+                <p class="mb-5 leading-relaxed">Desinstalamos programas innecesarios, reparamos errores del registro y eliminamos cualquier aplicación maliciosa que esté ralentizando tu PC sin tu consentimiento.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
+            </div>
+
+            <!-- Apartado de Cambio de Componentes -->
+            <div id="cambio-componentes-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Cambio+de+Componentes" alt="Cambio de Componentes" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Cambio de Componentes</h3>
+                <p class="mb-5 leading-relaxed">Reemplazamos piezas defectuosas como discos duros, fuentes de poder, tarjetas gráficas o cualquier otro componente que necesite ser cambiado. El presupuesto es personalizado según la pieza.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
+            </div>
+
+            <!-- Apartado de Upgrade -->
+            <div id="upgrade-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Upgrade" alt="Upgrade" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Upgrade</h3>
+                <p class="mb-5 leading-relaxed">Mejoramos tu equipo con componentes más modernos (por ejemplo, un SSD, más RAM o una tarjeta gráfica mejor) para potenciar su rendimiento y extender su vida útil.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
+            </div>
+
+            <!-- Apartado de Testeo -->
+            <div id="testeo-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <img src="https://placehold.co/600x400/000000/00ff00?text=Testeo" alt="Testeo" class="w-full h-auto max-h-64 rounded-xl mb-5 border border-hbk-green object-cover">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Testeo</h3>
+                <p class="mb-5 leading-relaxed">Realizamos un diagnóstico completo y exhaustivo de tu PC para identificar cualquier fallo potencial de hardware o software y te entregamos un informe detallado con las soluciones recomendadas.</p>
+                <div class="mt-auto text-center">
+                    <h3 class="text-xl font-bold mb-3 uppercase text-hbk-orange">¿Listo para potenciar tu equipo?</h3>
+                    <button class="contact-btn bg-transparent text-hbk-orange border-2 border-hbk-orange rounded-xl py-3 px-6 text-lg font-bold uppercase cursor-pointer transition-all duration-300 hover:bg-hbk-orange hover:text-hbk-black hover:shadow-glow-orange">Contáctanos ahora</button>
+                </div>
+            </div>
+
+            <!-- Apartado de Reservas y Comunicacion -->
+            <div id="reservas-comunicacion-section" class="service-section hidden flex-col items-center text-center p-5 opacity-0 transition-opacity duration-500 h-full">
+                <h3 class="text-2xl font-bold uppercase text-hbk-purple mb-4">Reservas y Comunicación</h3>
+                <p class="mb-5 leading-relaxed">Agenda tu servicio con facilidad y comunícate con nosotros directamente para cualquier consulta. Te ofrecemos un canal de atención personalizado para resolver tus dudas.</p>
+                
+                <!-- Contenedor del calendario y formulario de reserva -->
+                <div id="booking-container" class="w-full max-w-xl transition-all duration-500">
+                    <div id="calendar-header" class="flex justify-between items-center mb-4">
+                        <button id="prev-month" class="text-xl p-2 rounded-lg hover:bg-gray-800 transition-colors">&lt;</button>
+                        <h4 id="month-year" class="text-xl font-bold"></h4>
+                        <button id="next-month" class="text-xl p-2 rounded-lg hover:bg-gray-800 transition-colors">&gt;</button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-sm mb-2">
+                        <span>Lun</span>
+                        <span>Mar</span>
+                        <span>Mié</span>
+                        <span>Jue</span>
+                        <span>Vie</span>
+                        <span>Sáb</span>
+                        <span>Dom</span>
+                    </div>
+                    <div id="calendar-days" class="grid grid-cols-7 gap-1">
+                        <!-- Las celdas del calendario se generarán aquí con JavaScript -->
+                    </div>
+                    
+                    <div id="time-slots-container" class="mt-8 hidden">
+                        <h4 class="text-xl font-bold mb-4 text-center">Selecciona una hora:</h4>
+                        <div id="time-slots" class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            <!-- Los botones de hora se generarán aquí con JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Mensajes de estado -->
+                    <p id="booking-message" class="text-center mt-4 text-hbk-orange"></p>
+
+                    <!-- Formulario de Reserva (ahora controlado por JS) -->
+                    <form id="reserva-form" class="hidden flex-col gap-4 mt-8">
+                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required class="bg-gray-800 border border-hbk-purple rounded-lg p-3 text-hbk-green focus:outline-none focus:ring-2 focus:ring-hbk-purple">
+                        <input type="email" id="email" name="correo" placeholder="Tu correo electrónico" required class="bg-gray-800 border border-hbk-purple rounded-lg p-3 text-hbk-green focus:outline-none focus:ring-2 focus:ring-hbk-purple">
+                        <textarea id="mensaje" name="mensaje" placeholder="Describe tu problema o servicio solicitado..." rows="4" class="bg-gray-800 border border-hbk-purple rounded-lg p-3 text-hbk-green focus:outline-none focus:ring-2 focus:ring-hbk-purple"></textarea>
+                        <input type="hidden" id="selected-date-input" name="fecha">
+                        <input type="hidden" id="selected-time-input" name="hora">
+                        <button type="submit" class="bg-hbk-purple text-white border-2 border-hbk-purple rounded-xl py-4 font-bold uppercase transition-all duration-300 hover:bg-transparent hover:text-hbk-purple hover:shadow-glow-purple">Enviar Reserva</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="w-full text-center py-5 mt-auto border-t border-hbk-green relative z-10">
+        <p>© 2025 Servicios Informáticos KENTHORION. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Modal de mensaje -->
+    <div id="message-modal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-80 justify-center items-center transition-all duration-300">
+        <div class="bg-hbk-black border-2 border-hbk-green rounded-xl p-8 text-center max-w-sm shadow-glow-green animate-[fadeIn_0.5s_ease-out]">
+            <p id="modal-text" class="text-lg text-white"></p>
+            <button id="close-modal" class="mt-5 bg-hbk-orange text-hbk-black rounded-lg py-2 px-4 font-bold uppercase transition-colors hover:bg-hbk-purple hover:text-hbk-black">Cerrar</button>
         </div>
     </div>
-
+    
     <script type="module">
+        // Importar las bibliotecas de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, addDoc, getDocs, setDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Establecer el nivel de registro para depuración.
-        setLogLevel('debug');
-
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const appContainer = document.getElementById('app-container');
-        const errorMessageDiv = document.getElementById('error-message');
-
-        function showErrorMessage(message) {
-            errorMessageDiv.textContent = `Error: ${message}`;
-            errorMessageDiv.classList.remove('hidden');
-            loadingOverlay.classList.add('hidden');
-            appContainer.classList.add('hidden');
-        }
-
-        // --- Configuración de Firebase ---
-        let app, auth, db, userId;
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Variables globales proporcionadas por el entorno
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        let firebaseConfig = null;
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        try {
-            // Verificar si la variable de configuración existe y es una cadena válida
-            if (typeof __firebase_config === 'string' && __firebase_config.trim() !== '') {
-                firebaseConfig = JSON.parse(__firebase_config);
-                console.log('Configuración de Firebase detectada y parseada.');
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let userId = '';
+        let bookedSlots = [];
+        let selectedDate = null;
+        const RESERVAS_COLLECTION_PATH = `/artifacts/${appId}/public/data/reservas`;
+
+        // Elementos del DOM
+        const serviceButtons = document.querySelectorAll('.service-button');
+        const serviceSections = document.querySelectorAll('.service-section');
+        const contactButtons = document.querySelectorAll('.contact-btn');
+        const reservaForm = document.getElementById('reserva-form');
+        const reservasButton = document.querySelector('[data-section="reservas-comunicacion-section"]');
+        const modal = document.getElementById('message-modal');
+        const modalText = document.getElementById('modal-text');
+        const closeModalButton = document.getElementById('close-modal');
+        const userIdSpan = document.getElementById('user-id');
+        
+        // Elementos del calendario
+        const calendarHeader = document.getElementById('calendar-header');
+        const monthYearSpan = document.getElementById('month-year');
+        const calendarDaysContainer = document.getElementById('calendar-days');
+        const timeSlotsContainer = document.getElementById('time-slots-container');
+        const timeSlotsDiv = document.getElementById('time-slots');
+        const bookingMessage = document.getElementById('booking-message');
+
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        let currentDate = new Date();
+
+        // Lógica de la animación de fondo
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        // Propiedades del fondo
+        const primaryColor = 'rgba(0, 0, 255, 0.4)'; // Color azul de los polígonos
+        const dropColor = '#FF5F00'; // Color naranja para las gotas de lluvia
+
+        // Puntos y red de polígonos
+        const points = [];
+        const numPoints = 80;
+        const maxDist = 120;
+
+        // Gotas de lluvia
+        const raindrops = [];
+        const numRaindrops = 75; // Cantidad de gotas de lluvia
+
+        function setCanvasSize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            // Asegurarse de que las gotas se redistribuyan al cambiar el tamaño
+            raindrops.length = 0;
+            points.length = 0;
+            createParticles();
+        }
+
+        class Point {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = primaryColor;
+                ctx.fill();
+            }
+        }
+
+        class Raindrop {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = -Math.random() * height; // Iniciar fuera de la pantalla, en la parte superior
+                this.speed = 2 + Math.random() * 3;
+                this.size = 2;
+            }
+
+            update() {
+                this.y += this.speed;
+                // Reiniciar si sale de la pantalla
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.shadowColor = dropColor;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = dropColor;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function createParticles() {
+            for (let i = 0; i < numPoints; i++) {
+                points.push(new Point());
+            }
+            for (let i = 0; i < numRaindrops; i++) {
+                raindrops.push(new Raindrop());
+            }
+        }
+
+        function drawLines() {
+            for (let i = 0; i < points.length; i++) {
+                for (let j = i + 1; j < points.length; j++) {
+                    const dx = points[i].x - points[j].x;
+                    const dy = points[i].y - points[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < maxDist) {
+                        ctx.beginPath();
+                        ctx.moveTo(points[i].x, points[i].y);
+                        ctx.lineTo(points[j].x, points[j].y);
+                        ctx.strokeStyle = `rgba(0, 0, 255, ${1 - dist / maxDist})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Dibujar la red de polígonos
+            drawLines();
+            points.forEach(point => {
+                point.update();
+                point.draw();
+            });
+
+            // Dibujar las gotas de lluvia
+            raindrops.forEach(raindrop => {
+                raindrop.update();
+                raindrop.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = function() {
+            setCanvasSize();
+            animate();
+        };
+
+        window.onresize = setCanvasSize;
+        
+        // Código existente de la página (botones, modal, etc.)
+        function showSection(sectionId) {
+            serviceSections.forEach(section => {
+                section.classList.remove('active', 'flex');
+                section.classList.add('hidden');
+                section.style.opacity = '0';
+            });
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('flex');
+                setTimeout(() => {
+                    targetSection.classList.add('active');
+                    targetSection.style.opacity = '1';
+                }, 10);
+            }
+        }
+
+        function showModal(message) {
+            modalText.textContent = message;
+            modal.classList.add('flex');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        serviceButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const sectionId = event.currentTarget.dataset.section;
+                showSection(sectionId);
+            });
+        });
+
+        contactButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                showSection('reservas-comunicacion-section');
+            });
+        });
+
+        closeModalButton.addEventListener('click', closeModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // --- Lógica de Firebase y Reservas ---
+
+        // Autenticación de usuario
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                userIdSpan.textContent = userId;
+                // Iniciar la escucha de reservas solo después de la autenticación
+                listenForReservations();
             } else {
-                const message = 'ERROR: La variable de configuración de Firebase no está definida o es inválida.';
-                console.error(message);
-                showErrorMessage(message);
+                // Iniciar sesión anónimamente si no hay usuario
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Error al autenticar:", error);
+                }
             }
-        } catch (e) {
-            const message = 'ERROR: Falló al parsear la configuración de Firebase: ' + e.message;
-            console.error(message);
-            showErrorMessage(message);
-        }
+        });
 
-        // Inicializar Firebase solo si la configuración es válida
-        if (firebaseConfig && firebaseConfig.projectId) {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                console.log('Firebase App y Firestore inicializados correctamente.');
-            } catch (e) {
-                const message = 'ERROR: Falló la inicialización de Firebase: ' + e.message;
-                console.error(message);
-                showErrorMessage(message);
-            }
-        } else if (firebaseConfig && !firebaseConfig.projectId) {
-            const message = 'ERROR: La configuración de Firebase no contiene un "projectId".';
-            console.error(message);
-            showErrorMessage(message);
-        }
-
-        const cards = [
-            { front: "Hola", back: "Hello" },
-            { front: "Adiós", back: "Goodbye" },
-            { front: "Por favor", back: "Please" },
-            { front: "Gracias", back: "Thank you" }
-        ];
-
-        let currentCardIndex = 0;
-        const cardElement = document.getElementById('card');
-        const frontText = document.getElementById('front-text');
-        const backText = document.getElementById('back-text');
-        const nextButton = document.getElementById('next-button');
-
-        function displayCard(card) {
-            frontText.textContent = card.front;
-            backText.textContent = card.back;
-            cardElement.classList.remove('flipped');
-        }
-
-        function showNextCard() {
-            currentCardIndex = (currentCardIndex + 1) % cards.length;
-            displayCard(cards[currentCardIndex]);
-        }
-
-        // Event Listeners
-        if (cardElement) {
-            cardElement.addEventListener('click', () => {
-                cardElement.classList.toggle('flipped');
+        // Escuchar cambios en la base de datos de reservas en tiempo real
+        function listenForReservations() {
+            const reservasRef = collection(db, RESERVAS_COLLECTION_PATH);
+            onSnapshot(reservasRef, (snapshot) => {
+                bookedSlots = [];
+                snapshot.docs.forEach(doc => {
+                    bookedSlots.push(doc.data());
+                });
+                renderCalendar();
+                updateTimeSlots();
+            }, (error) => {
+                console.error("Error al escuchar reservas: ", error);
             });
         }
 
-        if (nextButton) {
-            nextButton.addEventListener('click', showNextCard);
+        // Renderizar el calendario
+        function renderCalendar() {
+            calendarDaysContainer.innerHTML = '';
+            monthYearSpan.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+            let day = firstDayOfMonth.getDay();
+            // Ajustar para que la semana comience en Lunes (0 = Dom, 1 = Lun, etc.)
+            const startDay = (day === 0) ? 6 : day - 1;
+
+            // Rellenar con días vacíos antes del primer día del mes
+            for (let i = 0; i < startDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('p-2', 'text-center', 'cursor-not-allowed', 'opacity-20');
+                calendarDaysContainer.appendChild(emptyCell);
+            }
+
+            for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('day-cell', 'p-2', 'rounded-xl', 'transition-all', 'duration-200', 'text-center', 'cursor-pointer');
+                cell.textContent = i;
+                
+                const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const dayOfWeek = currentDay.getDay(); // 0 = Domingo, 1 = Lunes...
+
+                // Habilitar solo de Lunes a Viernes y días futuros
+                if (dayOfWeek >= 1 && dayOfWeek <= 5 && currentDay >= today) {
+                    cell.classList.add('available', 'hover:bg-gray-800', 'hover:shadow-glow-green');
+                    cell.dataset.date = `${currentDay.getFullYear()}-${String(currentDay.getMonth() + 1).padStart(2, '0')}-${String(currentDay.getDate()).padStart(2, '0')}`;
+                    
+                    // Verificar si el día tiene reservas
+                    const isBooked = bookedSlots.some(slot => {
+                        const slotDate = new Date(slot.date);
+                        return slotDate.getFullYear() === currentDay.getFullYear() &&
+                               slotDate.getMonth() === currentDay.getMonth() &&
+                               slotDate.getDate() === currentDay.getDate();
+                    });
+                    
+                    if (isBooked) {
+                        cell.classList.add('fully-booked');
+                    }
+
+                    cell.addEventListener('click', () => {
+                        if (!cell.classList.contains('fully-booked')) {
+                            document.querySelectorAll('.day-cell.selected').forEach(d => d.classList.remove('selected'));
+                            cell.classList.add('selected');
+                            selectedDate = cell.dataset.date;
+                            updateTimeSlots();
+                        }
+                    });
+                } else {
+                    cell.classList.add('not-available');
+                    cell.title = 'Solo se puede reservar de Lunes a Viernes.';
+                }
+
+                calendarDaysContainer.appendChild(cell);
+            }
+        }
+
+        // Generar y actualizar los horarios disponibles
+        function updateTimeSlots() {
+            timeSlotsDiv.innerHTML = '';
+            bookingMessage.textContent = 'Selecciona una fecha disponible para ver los horarios.';
+            timeSlotsContainer.classList.add('hidden');
+            reservaForm.classList.add('hidden');
+
+            if (!selectedDate) return;
+
+            bookingMessage.textContent = 'Selecciona una hora disponible:';
+            timeSlotsContainer.classList.remove('hidden');
+
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const startHour = 8;
+            const endHour = 17;
+
+            for (let h = startHour; h <= endHour; h++) {
+                const hourString = `${String(h).padStart(2, '0')}:00`;
+                const slotId = `${selectedDate}T${hourString}`;
+
+                const isBooked = bookedSlots.some(slot => `${slot.date}T${slot.time}` === slotId);
+
+                const slotButton = document.createElement('button');
+                slotButton.type = 'button';
+                slotButton.classList.add('py-2', 'rounded-lg', 'font-bold', 'transition-colors', 'duration-200');
+                slotButton.textContent = hourString;
+                
+                if (isBooked) {
+                    slotButton.classList.add('bg-gray-700', 'text-gray-500', 'cursor-not-allowed');
+                    slotButton.disabled = true;
+                } else {
+                    slotButton.classList.add('bg-gray-900', 'border', 'border-hbk-purple', 'text-hbk-purple', 'hover:bg-hbk-purple', 'hover:text-hbk-black');
+                    slotButton.addEventListener('click', () => {
+                        document.querySelectorAll('.time-slot.active-button').forEach(b => b.classList.remove('active-button'));
+                        slotButton.classList.add('active-button');
+                        document.getElementById('selected-date-input').value = selectedDate;
+                        document.getElementById('selected-time-input').value = hourString;
+                        reservaForm.classList.remove('hidden');
+                    });
+                }
+                timeSlotsDiv.appendChild(slotButton);
+            }
         }
         
-        // --- Manejo de autenticación ---
-        // Espera a que Firebase se inicialice correctamente antes de ejecutar la lógica de autenticación
-        if (auth) {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    console.log('Usuario autenticado:', userId);
-                    loadingOverlay.classList.add('hidden');
-                    appContainer.classList.remove('hidden');
-                    displayCard(cards[currentCardIndex]);
-                } else {
-                    console.log('No hay usuario autenticado. Intentando iniciar sesión...');
-                    try {
-                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                        if (token) {
-                            await signInWithCustomToken(auth, token);
-                            console.log('Inicio de sesión con token personalizado exitoso.');
-                        } else {
-                            await signInAnonymously(auth);
-                            console.log('Inicio de sesión anónimo exitoso.');
-                        }
-                    } catch (e) {
-                        console.error('ERROR: Falló el inicio de sesión:', e);
-                        showErrorMessage(`No se pudo iniciar sesión. ${e.message}`);
-                    }
+        // Navegación del calendario
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            selectedDate = null;
+            renderCalendar();
+            updateTimeSlots();
+        });
+
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            selectedDate = null;
+            renderCalendar();
+            updateTimeSlots();
+        });
+
+        // Manejar el envío del formulario a Firestore
+        if (reservaForm) {
+            reservaForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                if (!selectedDate || !document.getElementById('selected-time-input').value) {
+                    showModal("Por favor, selecciona una fecha y hora válidas.");
+                    return;
+                }
+                
+                const nombre = document.getElementById('nombre').value;
+                const email = document.getElementById('email').value;
+                const mensaje = document.getElementById('mensaje').value;
+
+                try {
+                    const reservasRef = collection(db, RESERVAS_COLLECTION_PATH);
+                    await addDoc(reservasRef, {
+                        nombre: nombre,
+                        email: email,
+                        mensaje: mensaje,
+                        fecha: selectedDate,
+                        hora: document.getElementById('selected-time-input').value,
+                        userId: userId
+                    });
+                    
+                    showModal("¡Reserva guardada con éxito! Revisa el calendario para ver tu reserva.");
+                    reservaForm.reset();
+                    reservaForm.classList.add('hidden');
+                    selectedDate = null;
+                    document.querySelectorAll('.day-cell.selected').forEach(d => d.classList.remove('selected'));
+
+                } catch (error) {
+                    console.error("Error al guardar la reserva: ", error);
+                    showModal("Error al procesar la reserva. Por favor, inténtalo de nuevo.");
                 }
             });
         }
